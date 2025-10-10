@@ -25,11 +25,6 @@ int main(int argc, char **argv){
   char *main_name = "main.c";
   bool verbose = false;
 
-  if (argc < 2){
-    fprintf(stderr, "Error: no project name given\n");
-    usage(stderr, prgm);
-    exit(1);
-  }
 
   while ((opt = getopt(argc, argv, "n:hv")) != -1){
     switch (opt){
@@ -47,13 +42,19 @@ int main(int argc, char **argv){
       exit(1);
       break;
     }}
+  if (optind >= 2){
+    fprintf(stderr, "Error: no project name given\n");
+    usage(stderr, prgm);
+    exit(1);
+  }
+
   char *project_name = argv[optind];
-  /* size_t project_name_len = strlen(project_name); */
 
-  fprintf(stdout, "project name: %s\n", project_name);
-
-  fprintf(stdout, "main name: %s\n", main_name);
-
+  if (verbose){
+    fprintf(stdout, "project name: %s\n", project_name);
+    fprintf(stdout, "main name: %s\n", main_name);
+  }
+  
   struct stat st = {0};
   if (stat(project_name, &st) == -1){
     mkdir(project_name, 0755); //0755 is the standard permissions for a directory
