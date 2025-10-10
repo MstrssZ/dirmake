@@ -1,9 +1,14 @@
+#include <fcntl.h>
+#include <string.h>
 #include <getopt.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include "main.h"
+#include "makefile.h"
 
 void usage(FILE *stream, char *prgm){
   fprintf(stream, "Usage: %s [options] project_name\n", prgm);
@@ -17,7 +22,7 @@ int main(int argc, char **argv){
 
   int opt;
   char *prgm = argv[0];
-  char *main_name = "main";
+  char *main_name = "main.c";
   bool verbose = false;
 
   if (argc < 2){
@@ -36,12 +41,14 @@ int main(int argc, char **argv){
       break;
     case 'v':
       verbose = true;
+      break;
     case '?':
       usage(stderr, prgm);
       exit(1);
       break;
     }}
   char *project_name = argv[optind];
+  /* size_t project_name_len = strlen(project_name); */
 
   fprintf(stdout, "project name: %s\n", project_name);
 
@@ -53,11 +60,28 @@ int main(int argc, char **argv){
     if (verbose) {
       printf("INFO: Made folder: %s\n", project_name);
     }
-  } else {
+  } else if (verbose) {
     printf("INFO: Folder '%s' exists\n", project_name);
   }
 
+  char *dir_path = strcat(project_name, "/");
+  char *main_path = strdup(dir_path);
+  main_path = strcat(main_path, main_name);
+
+  FILE *main_fd = fopen(main_path, "w+");
+
+  fprintf(main_fd, "%s", main_file_body);
+
+  fclose(main_fd);
+
+  char *makefile_path = strdup(dir_path);
+  makefile_path = strcat(makefile_path, "Makefile");
 
 
+  FILE *makefile_fd = fopen(makefile_path, "w+");
+
+  fprintf(makefile_fd, "%s", makefile_file_body);
+
+  fclose(makefile_fd);
   return 0;
 }
