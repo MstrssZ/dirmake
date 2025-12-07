@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
       break;
     }
   }
-  if (optind >= 2) {
+  if (optind <= 2) {
     fprintf(stderr, "Error: no project name given\n");
     usage(stderr, prgm);
     exit(1);
